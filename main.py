@@ -4,7 +4,7 @@ import pytesseract
 
 path = './video_right.mp4'
 
-cap = cv2.VideoCapture(path)
+cap = cv2.VideoCapture(0)
 
 count_img = 0
 
@@ -19,6 +19,8 @@ else:
             break
         
         if count_img % 5 ==0:
+            
+            #flipped = cv2.flip(img, -1)
 
             # Convert to grayscale for better OCR results
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -63,10 +65,10 @@ else:
             
         count_img += 1
 
-        #cv2.imshow("Camera Test", img)
+        cv2.imshow("Camera Test", img)
 
-        #if cv2.waitKey(1) & 0xFF == ord('q'):
-            #break
-
-#cap.release()
-#cv2.destroyAllWindows()
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+            
+cap.release()
+cv2.destroyAllWindows()
