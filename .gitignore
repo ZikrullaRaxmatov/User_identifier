@@ -1,0 +1,43 @@
+# Ignore Python cache
+__pycache__/
+*.py[cod]
+
+# Ignore virtual environments
+venv/
+.env/
+.venv/
+
+# Ignore OS/system files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE/editor files
+.vscode/
+.idea/
+
+# Ignore image and video output files
+*.jpg
+*.jpeg
+*.png
+*.bmp
+*.tiff
+*.gif
+*.mp4
+*.avi
+
+# Ignore OCR output (optional)
+output.txt
+ocr_results/
+
+# Ignore log files
+*.log
+
+# Ignore Tesseract trained data (if you copy any)
+*.traineddata
+tessdata/
+
+# Ignore notebooks checkpoints
+.ipynb_checkpoints/
+
+# If using dotenv (.env) to store API keys or paths
+.env
