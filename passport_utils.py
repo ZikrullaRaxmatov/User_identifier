@@ -3,9 +3,8 @@ import cv2
 import pytesseract
 
 
-path = './video_right.mp4'
 
-def extract_passport():
+def extract_passport(path):
 
     cap = cv2.VideoCapture(path)
     count_img = 0
@@ -36,7 +35,7 @@ def extract_passport():
                 # Example OCR result
                 ocr_text = text.replace('\n', ' ').strip()
 
-                #print(ocr_text)
+                print(ocr_text)
 
                 # Extract Passport Number (e.g., FA6752048)
                 passport_number = re.search(r'\b[A-Z]{2}\d{7}\b', ocr_text)
