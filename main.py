@@ -1,8 +1,8 @@
-from passport_utils import extract_passport
+from passport_utils import extract_passport, test
 
 def main():
-    print(extract_passport(path='./video_id.mp4'))
-    
+    extract_passport('./top_right_crop.jpg')
+    #test('./video_right.mp4')
 
 if __name__ == "__main__":
     main()
