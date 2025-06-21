@@ -3,7 +3,7 @@ from PIL import Image
 from torchvision import transforms
 
 # Input & output directories
-input_dir = "images"               # Folder with original images
+input_dir = "passports"               # Folder with original images
 output_dir = "augmented_images"    # Folder for augmented images
 os.makedirs(output_dir, exist_ok=True)
 
