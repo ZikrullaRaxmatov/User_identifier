@@ -19,7 +19,7 @@ def extract_passport(path):
                 print("Failed to grab frame")
                 break
             
-            if count_img % 5 ==0:
+            if count_img % 5 == 0:
                         
                 #flipped = cv2.flip(img, -1)
 

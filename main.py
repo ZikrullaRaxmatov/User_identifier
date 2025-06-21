@@ -1,7 +1,7 @@
 from passport_utils import extract_passport
 
 def main():
-    print(extract_passport(path=2))
+    print(extract_passport(path='./video_id.mp4'))
     
 
 if __name__ == "__main__":
