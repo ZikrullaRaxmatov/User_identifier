@@ -4,7 +4,9 @@ import torchvision.transforms as transforms
 import os
 from PIL import Image, ImageDraw
 from datetime import datetime
-from passport_utils import extract_passport
+from passport_utils import extract_passport, passport
+from streamlit_webrtc import webrtc_streamer
+from video_processor import VideoProcessor
 
 
 # ----------- Configurations -----------
@@ -41,10 +43,10 @@ page = st.sidebar.radio("Go to", ["🏠 Main Page", "🧠 Identify User", "📂 
 
 # -------------- Main Page --------------
 if page == "🏠 Main Page":
-    st.title("Welcome to the ID Document Classifier App")
+    st.title("Welcome to the Document Classifier App")
     st.markdown("""
     This app allows you to:
-    - Upload passport or ID images.
+    - Real time video or upload passport or ID images.
     - Detect document type using a trained ResNet50 model.
     - View results and download classification.
     """)
@@ -52,6 +54,22 @@ if page == "🏠 Main Page":
 # -------------- Identify User --------------
 elif page == "🧠 Identify User":
     st.title("🧠 Identify Document Type")
+    st.subheader("📷 Real-Time Video Streaming")
+    
+    ctx = webrtc_streamer(
+        key="capture",
+        video_processor_factory=VideoProcessor,
+        media_stream_constraints={"video": True, "audio": False}
+    )
+
+    # Wait until the stream starts
+    if ctx.video_processor:
+        frame = ctx.video_processor.latest_frame
+        if frame is not None:
+            passport(frame)
+        
+
+    
     uploaded_file = st.file_uploader("📤 Upload Image", type=["jpg", "jpeg", "png"])
 
     if uploaded_file is not None:
