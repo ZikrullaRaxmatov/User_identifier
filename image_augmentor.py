@@ -3,7 +3,7 @@ from PIL import Image
 from torchvision import transforms
 
 # Input & output directories
-input_dir = "passport" # Folder with original images
+input_dir = "id" # Folder with original images
 output_dir = "augmented_images"    # Folder for augmented images
 os.makedirs(output_dir, exist_ok=True)
 
@@ -15,7 +15,7 @@ transform = transforms.Compose([
     transforms.RandomResizedCrop(224, scale=(0.8, 1.0)),
     transforms.ToTensor()
 ])
-JPG
+
 # For converting tensor back to image
 to_pil = transforms.ToPILImage()
 
