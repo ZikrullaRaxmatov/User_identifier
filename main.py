@@ -57,19 +57,22 @@ elif page == "🧠 Identify User":
     st.subheader("📷 Real-Time Video Streaming")
     
     ctx = webrtc_streamer(
-        key="capture",
+        key="ocr-app",
         video_processor_factory=VideoProcessor,
-        media_stream_constraints={"video": True, "audio": False}
+        media_stream_constraints={
+            "video": {
+                "width": {"ideal": 320},
+                "height": {"ideal": 240},
+        }, 
+        "audio": False
+        }
     )
 
-    # Wait until the stream starts
+    # 🔁 Show latest recognized text (optional)
     if ctx.video_processor:
-        frame = ctx.video_processor.latest_frame
-        if frame is not None:
-            passport(frame)
+        st.text_area("Live OCR Text", ctx.video_processor.latest_text, height=150)
         
 
-    
     uploaded_file = st.file_uploader("📤 Upload Image", type=["jpg", "jpeg", "png"])
 
     if uploaded_file is not None:

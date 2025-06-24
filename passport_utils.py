@@ -1,42 +1,27 @@
 import re
-import av
 import cv2 
 import pytesseract
+import streamlit as st
 
-def passport(frame):
-    
-    # Extract text from preprocessed image
-    text = pytesseract.image_to_string(frame)
+def passport(path):
 
-    # Example OCR result
-    ocr_text = text.replace('\n', ' ').strip()
+    cap = cv2.VideoCapture(path)
+    frame_placeholder = st.empty()
 
-    print(ocr_text)
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
 
-    # Extract Passport Number (e.g., FA6752048)
-    passport_number = re.search(r'\b[A-Z]{2}\d{7}\b', ocr_text)
+        # Convert BGR to RGB for Streamlit
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        frame_placeholder.image(frame, channels="RGB")
 
-    if passport_number:
-        print("Passport No:", passport_number.group())
-        #return passport_number.group()
+        # Optional stop condition
+        if st.button("Stop", key='stop'):
+            break
 
-    mrz_lines = re.findall(r'[A-Z0-9<]{40,}', ocr_text)
-    #print(mrz_lines)
-    #print(len(mrz_lines))
-
-    if mrz_lines:
-        mrz_line = mrz_lines[0]
-        print("MRZ Line:", mrz_line)
-
-        match = re.search(r'[A-Z]{2}\d{7}', mrz_line)
-        if match:
-            print("Passport No:", match.group())
-            #return match.group()
-        else:
-            print("Passport No not found in MRZ Line")
-    else:
-        print("MRZ Line not found.")
-    
+    cap.release()
 
 
 def extract_passport(path):
