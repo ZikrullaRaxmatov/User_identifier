@@ -4,20 +4,22 @@ import av
 import re
 import cv2
 import pytesseract
+from passport_utils import UserInfo
 
 class VideoProcessor(VideoProcessorBase):
-    def __init__(self):
-        self.latest_text = ""
 
     def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
+        
+        ui = UserInfo()
+        
         # 🔄 1. Convert to NumPy
         img = frame.to_ndarray(format="bgr24")
 
         # 🧪 2. Preprocessing
-        #gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         
         # Optionally threshold or denoise for better OCR
-        #gray = cv2.threshold(gray, 128, 255, cv2.THRESH_BINARY)[1]
+        gray = cv2.threshold(gray, 128, 255, cv2.THRESH_BINARY)[1]
 
         # 🔍 3. OCR: read text from frame
         text = pytesseract.image_to_string(img)
@@ -31,7 +33,8 @@ class VideoProcessor(VideoProcessorBase):
         passport_number = re.search(r'\b[A-Z]{2}\d{7}\b', ocr_text)
 
         if passport_number:
-            print("Passport No:", passport_number.group())
+            #print("Passport No:", passport_number.group())
+            ui.set_name("Salom")
             return passport_number.group(), frame
 
         mrz_lines = re.findall(r'[A-Z0-9<]{40,}', ocr_text)
@@ -42,7 +45,8 @@ class VideoProcessor(VideoProcessorBase):
 
             match = re.search(r'[A-Z]{2}\d{7}', mrz_line)
             if match:
-                print("Passport No:", match.group())
+                #print("Passport No:", match.group())
+                ui.set_name("Salom2")
                 return match.group(), frame
             else:
                 print("Passport No not found in MRZ Line")
@@ -53,3 +57,4 @@ class VideoProcessor(VideoProcessorBase):
 
         # 🖼 5. Return the processed frame
         #return av.VideoFrame.from_ndarray(img, format="bgr24")
+        

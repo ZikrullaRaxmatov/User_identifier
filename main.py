@@ -4,7 +4,7 @@ import torchvision.transforms as transforms
 import os
 from PIL import Image, ImageDraw
 from datetime import datetime
-from passport_utils import extract_passport, passport
+from passport_utils import extract_passport, UserInfo
 from streamlit_webrtc import webrtc_streamer
 from video_processor import VideoProcessor
 
@@ -55,20 +55,22 @@ if page == "🏠 Main Page":
 elif page == "🧠 Identify User":
     st.title("🧠 Identify Document Type")
     st.subheader("📷 Real-Time Video Streaming")
+        
+    # Create two columns
+    col1, col2 = st.columns([2, 1])
     
-    ctx = webrtc_streamer(
-        key="ocr-app",
-        video_processor_factory=VideoProcessor,
-        media_stream_constraints={
-            "video": {
-                "width": {"ideal": 250},
-                "height": {"ideal": 200},
-        }, 
-        "audio": False
-        }
-    )
-
-    print(ctx)
+    with col1:
+        ctx = webrtc_streamer(
+            key="ocr-app",
+            video_processor_factory=VideoProcessor,
+            media_stream_constraints={"video": True, "audio": False}
+        )
+        
+    with col2:
+        ui = UserInfo()
+        
+        if ui.get_name():
+            st.write("Passport No:", ui.get_name())
         
 
     uploaded_file = st.file_uploader("📤 Upload Image", type=["jpg", "jpeg", "png"])
@@ -101,7 +103,7 @@ elif page == "🧠 Identify User":
             box = [int(0.65 * w), int(0.05 * h), int(0.95 * w), int(0.35 * h)]
             draw.rectangle(box, outline="green", width=4)
             st.image(draw_img, caption="With Bounding Box", use_container_width=True)
-
+            
         # Crop ROI
         if st.checkbox("✂️ Crop Top-Right"):
             cropped = image.crop((int(0.65 * w), int(0.05 * h), int(0.95 * w), int(0.35 * h)))
@@ -112,6 +114,7 @@ elif page == "🧠 Identify User":
             with open(result_file, "rb") as f:
                 st.download_button("Download Result File", f, file_name=os.path.basename(result_file))
 
+        
 # -------------- All Users Page --------------
 elif page == "📂 All Users":
     st.title("📂 All Prediction Results")

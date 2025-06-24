@@ -3,26 +3,27 @@ import cv2
 import pytesseract
 import streamlit as st
 
-def passport(path):
+import streamlit as st
 
-    cap = cv2.VideoCapture(path)
-    frame_placeholder = st.empty()
+# Define a class with getter and setter using @property
+class UserInfo:
+    def __init__(self, name=""):
+        self.__name = name  # private variable
 
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            break
+    # Getter
+    def get_name(self):
+        return self.__name
 
-        # Convert BGR to RGB for Streamlit
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame_placeholder.image(frame, channels="RGB")
+    # Setter
+    def set_name(self, value):
+        if not value.strip():
+            raise ValueError("Name cannot be empty!")
+        self.__name = value
 
-        # Optional stop condition
-        if st.button("Stop", key='stop'):
-            break
-
-    cap.release()
-
+    # Extra method (computed value)
+    def get_name_length(self):
+        return len(self.__name)
+    
 
 def extract_passport(path):
 
