@@ -61,16 +61,14 @@ elif page == "🧠 Identify User":
         video_processor_factory=VideoProcessor,
         media_stream_constraints={
             "video": {
-                "width": {"ideal": 320},
-                "height": {"ideal": 240},
+                "width": {"ideal": 250},
+                "height": {"ideal": 200},
         }, 
         "audio": False
         }
     )
 
-    # 🔁 Show latest recognized text (optional)
-    if ctx.video_processor:
-        st.text_area("Live OCR Text", ctx.video_processor.latest_text, height=150)
+    print(ctx)
         
 
     uploaded_file = st.file_uploader("📤 Upload Image", type=["jpg", "jpeg", "png"])
