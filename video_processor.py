@@ -4,7 +4,6 @@ import av
 import re
 import cv2
 import pytesseract
-from passport_utils import UserInfo
 
 class VideoProcessor(VideoProcessorBase):
     

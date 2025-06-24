@@ -1,14 +1,13 @@
 import os
-import cv2
 import streamlit as st
 import torch
 import torchvision.transforms as transforms
-from PIL import Image, ImageDraw
+from PIL import Image
 from datetime import datetime
-from passport_utils import extract_passport, UserInfo
-from streamlit_webrtc import webrtc_streamer
-from video_processor import VideoProcessor
-
+import tempfile
+import cv2
+import pytesseract
+import re
 
 # ----------- Configurations -----------
 st.set_page_config(page_title="ID Classifier App", layout="wide")
@@ -59,72 +58,112 @@ elif page == "🧠 Identify User":
         
     # Create two columns
     col1, col2 = st.columns([2, 1])
+    current_id = None
+    current_img = None
     
     with col1:
-        ctx = webrtc_streamer(
-            key="ocr-app",
-            video_processor_factory=VideoProcessor,
-            media_stream_constraints={"video": True, "audio": False}
-        )
+        video_file = st.file_uploader("Upload a video", type=["mp4", "mov", "avi"])
         
+        if video_file is not None:
+            # ⏳ Save video to temp file
+            tfile = tempfile.NamedTemporaryFile(delete=False)
+            tfile.write(video_file.read())
+            
+            stframe = st.empty()
+            
+            cap = cv2.VideoCapture(tfile.name)
+            count_img = 0
+
+            if not cap.isOpened():
+                print("Camera not accessible or not found.")
+            else:
+                print("Camera is working! Press 'q' to quit.")    
+
+                while True:
+                    ret, img = cap.read()
+                    if not ret:
+                        print("Failed to grab frame")
+                        break
+                    
+                    if count_img % 5 == 0:
+                                
+                        #flipped = cv2.flip(img, -1)
+                        
+                        # Convert to grayscale for better OCR results
+                        #gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+                        # Optional: thresholding or blurring
+                        #gray = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)[1]
+
+                        # Extract text from preprocessed image
+                        text = pytesseract.image_to_string(img)
+
+                        # Example OCR result
+                        ocr_text = text.replace('\n', ' ').strip()
+
+                        #print(ocr_text)
+
+                        # Extract Passport Number (e.g., FA6752048)
+                        passport_number = re.search(r'\b[A-Z]{2}\d{7}\b', ocr_text)
+
+                        if passport_number:
+                            print("Passport No:", passport_number.group())
+                            current_id, current_img = passport_number.group(), img
+                            break
+
+                        mrz_lines = re.findall(r'[A-Z0-9<]{40,}', ocr_text)
+                        #print(mrz_lines)
+                        #print(len(mrz_lines))
+
+                        if mrz_lines:
+                            mrz_line = mrz_lines[0]
+                            print("MRZ Line:", mrz_line)
+
+                            match = re.search(r'[A-Z]{2}\d{7}', mrz_line)
+                            if match:
+                                print("Passport No:", match.group())
+                                current_id, current_img = match.group(), img
+                                break
+                            else:
+                                print("Passport No not found in MRZ Line")
+                        else:
+                            print("MRZ Line not found.", count_img)
+                        
+                    count_img += 1
+                    
+                    resized_img = cv2.resize(img, (500, 450))
+                    stframe.image(resized_img)
+
+            
     with col2:
         
-        passport_number = st.session_state.get("passport_number")
-        frame = st.session_state.get("latest_frame")
+        if current_id:
+            st.write("Passport ID: ", current_id)
+            pil_img = Image.fromarray(img)
 
-        if passport_number:
-            st.success(f"Detected Passport Number: {passport_number}")
+            img_tensor = transform(pil_img).unsqueeze(0)
+            with torch.no_grad():
+                output = model(img_tensor)
+                pred_idx = torch.argmax(output, dim=1).item()
+                confidence = torch.softmax(output, dim=1)[0][pred_idx].item()
+
+            pred_label = class_names[pred_idx]
+            st.success(f"**Predicted: {pred_label}**")
+            st.info(f"Confidence: `{confidence:.2%}`")
+
+            # Save to results folder (for All Users)
+            os.makedirs("results", exist_ok=True)
+            result_file = f"results/{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+            with open(result_file, "w") as f:
+                f.write(f"Prediction: {pred_label}\nConfidence: {confidence:.2%}")
+
+            # Download result
+            if st.button("📥 Download Prediction"):
+                with open(result_file, "rb") as f:
+                    st.download_button("Download Result File", f, file_name=os.path.basename(result_file))
         else:
-            st.warning("Passport Number not found yet.")
+            st.write("No Data")
 
-        if frame is not None:
-            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            st.image(Image.fromarray(frame_rgb), caption="Captured Frame")
-        else:
-            st.info("No frame captured yet.")
-
-
-
-    uploaded_file = st.file_uploader("📤 Upload Image", type=["jpg", "jpeg", "png"])
-
-    if uploaded_file is not None:
-        image = Image.open(uploaded_file).convert("RGB")
-        st.image(image, caption="Uploaded Image", use_container_width=True)
-
-        img_tensor = transform(image).unsqueeze(0)
-        with torch.no_grad():
-            output = model(img_tensor)
-            pred_idx = torch.argmax(output, dim=1).item()
-            confidence = torch.softmax(output, dim=1)[0][pred_idx].item()
-
-        pred_label = class_names[pred_idx]
-        st.success(f"**Predicted: {pred_label}**")
-        st.info(f"Confidence: `{confidence:.2%}`")
-
-        # Save to results folder (for All Users)
-        os.makedirs("results", exist_ok=True)
-        result_file = f"results/{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
-        with open(result_file, "w") as f:
-            f.write(f"Prediction: {pred_label}\nConfidence: {confidence:.2%}")
-
-        # Draw fake box
-        if st.checkbox("🔲 Show Bounding Box"):
-            draw_img = image.copy()
-            draw = ImageDraw.Draw(draw_img)
-            w, h = draw_img.size
-            box = [int(0.65 * w), int(0.05 * h), int(0.95 * w), int(0.35 * h)]
-            draw.rectangle(box, outline="green", width=4)
-            st.image(draw_img, caption="With Bounding Box", use_container_width=True)
-            
-        # Crop ROI
-        if st.checkbox("✂️ Crop Top-Right"):
-            cropped = image.crop((int(0.65 * w), int(0.05 * h), int(0.95 * w), int(0.35 * h)))
-            st.image(cropped, caption="Cropped Region", use_container_width=False)
-
-        # Download result
-        if st.button("📥 Download Prediction"):
-            with open(result_file, "rb") as f:
-                st.download_button("Download Result File", f, file_name=os.path.basename(result_file))
 
         
 # -------------- All Users Page --------------
@@ -176,12 +215,4 @@ st.sidebar.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-
-def main():
-    pass
-    #extract_passport('./top_right_crop.jpg')
-    #test('./video_right.mp4')
-
-if __name__ == "__main__":
-    main()
     

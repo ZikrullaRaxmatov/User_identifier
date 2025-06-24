@@ -2,29 +2,7 @@ import re
 import cv2 
 import pytesseract
 import streamlit as st
-
-import streamlit as st
-
-# Define a class with getter and setter using @property
-class UserInfo:
-    def __init__(self, name=""):
-        self.__name = name  # private variable
-
-    # Getter
-    def get_name(self):
-        return self.__name
-
-    # Setter
-    def set_name(self, value):
-        if not value.strip():
-            raise ValueError("Name cannot be empty!")
-        self.__name = value
-
-    # Extra method (computed value)
-    def get_name_length(self):
-        return len(self.__name)
     
-
 def extract_passport(path):
 
     cap = cv2.VideoCapture(path)
@@ -57,14 +35,14 @@ def extract_passport(path):
                 # Example OCR result
                 ocr_text = text.replace('\n', ' ').strip()
 
-                print(ocr_text)
+                #print(ocr_text)
 
                 # Extract Passport Number (e.g., FA6752048)
                 passport_number = re.search(r'\b[A-Z]{2}\d{7}\b', ocr_text)
 
                 if passport_number:
                     print("Passport No:", passport_number.group())
-                    #return passport_number.group()
+                    return passport_number.group(), img
 
                 mrz_lines = re.findall(r'[A-Z0-9<]{40,}', ocr_text)
                 #print(mrz_lines)
@@ -77,7 +55,7 @@ def extract_passport(path):
                     match = re.search(r'[A-Z]{2}\d{7}', mrz_line)
                     if match:
                         print("Passport No:", match.group())
-                        #return match.group()
+                        return match.group(), img
                     else:
                         print("Passport No not found in MRZ Line")
                 else:
@@ -85,10 +63,10 @@ def extract_passport(path):
                 
             count_img += 1
                 
-            cv2.imshow("Camera Test", img)
+            #cv2.imshow("Camera Test", img)
 
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+            #if cv2.waitKey(1) & 0xFF == ord('q'):
+                #break
                 
-    cap.release()
-    cv2.destroyAllWindows()
+    #cap.release()
+    #cv2.destroyAllWindows()

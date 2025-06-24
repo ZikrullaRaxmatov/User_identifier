@@ -1,0 +1,2 @@
+Prediction: ID Card
+Confidence: 52.69%
