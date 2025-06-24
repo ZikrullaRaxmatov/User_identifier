@@ -164,8 +164,6 @@ elif page == "🧠 Identify User":
         else:
             st.write("No Data")
 
-
-        
 # -------------- All Users Page --------------
 elif page == "📂 All Users":
     st.title("📂 All Prediction Results")
