@@ -1,7 +1,8 @@
+import os
+import cv2
 import streamlit as st
 import torch
 import torchvision.transforms as transforms
-import os
 from PIL import Image, ImageDraw
 from datetime import datetime
 from passport_utils import extract_passport, UserInfo
@@ -67,11 +68,22 @@ elif page == "🧠 Identify User":
         )
         
     with col2:
-        ui = UserInfo()
         
-        if ui.get_name():
-            st.write("Passport No:", ui.get_name())
-        
+        passport_number = st.session_state.get("passport_number")
+        frame = st.session_state.get("latest_frame")
+
+        if passport_number:
+            st.success(f"Detected Passport Number: {passport_number}")
+        else:
+            st.warning("Passport Number not found yet.")
+
+        if frame is not None:
+            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            st.image(Image.fromarray(frame_rgb), caption="Captured Frame")
+        else:
+            st.info("No frame captured yet.")
+
+
 
     uploaded_file = st.file_uploader("📤 Upload Image", type=["jpg", "jpeg", "png"])
 

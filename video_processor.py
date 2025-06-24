@@ -7,10 +7,12 @@ import pytesseract
 from passport_utils import UserInfo
 
 class VideoProcessor(VideoProcessorBase):
+    
+    def __init__(self):
+        self.passport_number = None
+        self.current_frame = None
 
     def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
-        
-        ui = UserInfo()
         
         # 🔄 1. Convert to NumPy
         img = frame.to_ndarray(format="bgr24")
@@ -29,32 +31,24 @@ class VideoProcessor(VideoProcessorBase):
 
         print(ocr_text)
 
-        # Extract Passport Number (e.g., FA6752048)
-        passport_number = re.search(r'\b[A-Z]{2}\d{7}\b', ocr_text)
+        # Extract Passport Number
+        passport_number_match = re.search(r'\b[A-Z]{2}\d{7}\b', ocr_text)
+        passport_number = None
+
+        if passport_number_match:
+            passport_number = passport_number_match.group()
+        else:
+            mrz_lines = re.findall(r'[A-Z0-9<]{40,}', ocr_text)
+            if mrz_lines:
+                match = re.search(r'[A-Z]{2}\d{7}', mrz_lines[0])
+                if match:
+                    passport_number = match.group()
 
         if passport_number:
-            #print("Passport No:", passport_number.group())
-            ui.set_name("Salom")
-            return passport_number.group(), frame
-
-        mrz_lines = re.findall(r'[A-Z0-9<]{40,}', ocr_text)
-
-        if mrz_lines:
-            mrz_line = mrz_lines[0]
-            print("MRZ Line:", mrz_line)
-
-            match = re.search(r'[A-Z]{2}\d{7}', mrz_line)
-            if match:
-                #print("Passport No:", match.group())
-                ui.set_name("Salom2")
-                return match.group(), frame
-            else:
-                print("Passport No not found in MRZ Line")
-        else:
-            print("MRZ Line not found.")
-        
-        #self.latest_text = text
+            # ✅ Store into session_state
+            st.session_state["passport_number"] = passport_number
+            st.session_state["latest_frame"] = img
 
         # 🖼 5. Return the processed frame
-        #return av.VideoFrame.from_ndarray(img, format="bgr24")
+        return passport_number
         
