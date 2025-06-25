@@ -3,11 +3,11 @@ import streamlit as st
 import torch
 import torchvision.transforms as transforms
 from PIL import Image
-from datetime import datetime
 import tempfile
 import cv2
 import pytesseract
 import re
+from user_utils import find_user_by_id
 
 # ----------- Configurations -----------
 st.set_page_config(page_title="ID Classifier App", layout="wide")
@@ -136,19 +136,14 @@ elif page == "🧠 Identify User":
             pred_label = class_names[pred_idx]
             st.success(f"**Predicted: {pred_label}**")
             st.success(f"**ID: {current_id}**")
-            
             st.info(f"Confidence: `{confidence:.2%}`")
-
-            # Save to results folder (for All Users)
-            os.makedirs("results", exist_ok=True)
-            result_file = f"results/{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
-            with open(result_file, "w") as f:
-                f.write(f"Prediction: {pred_label}\nConfidence: {confidence:.2%}")
-
-            # Download result
-            if st.button("📥 Download Prediction"):
-                with open(result_file, "rb") as f:
-                    st.download_button("Download Result File", f, file_name=os.path.basename(result_file))
+            
+            st.markdown("___")
+            folder_path = './results/'
+            user = find_user_by_id(folder_path, current_id)
+            st.success("User Found!!!")
+            st.write(user)
+            
         else:
             st.write("No Data")
 

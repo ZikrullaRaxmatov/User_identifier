@@ -16,3 +16,17 @@ def find_user_by_id(folder_path, target_id):
                             return ''.join(lines)
     return "❌ User not found."
 
+
+
+'''
+# Save to results folder (for All Users)
+os.makedirs("results", exist_ok=True)
+result_file = f"results/{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+with open(result_file, "w") as f:
+    f.write(f"Prediction: {pred_label}\nConfidence: {confidence:.2%}")
+
+# Download result
+if st.button("📥 Download Prediction"):
+    with open(result_file, "rb") as f:
+        st.download_button("Download Result File", f, file_name=os.path.basename(result_file))
+'''
