@@ -8,6 +8,7 @@ import cv2
 import pytesseract
 import re
 from user_utils import find_user_by_id
+from passport_utils import extract_passport
 import pandas as pd
 
 # ----------- Configurations -----------
@@ -60,6 +61,7 @@ elif page == "🧠 Identify User":
     # Create two columns
     col1, col2 = st.columns([2, 1])
     current_id = None
+    current_img = None
     
     with col1:
         video_file = st.file_uploader("Upload a video", type=["mp4", "mov", "avi"])
@@ -72,6 +74,7 @@ elif page == "🧠 Identify User":
             stframe = st.empty()
             
             cap = cv2.VideoCapture(tfile.name)
+           
             count_img = 0
 
             if not cap.isOpened():
@@ -81,13 +84,12 @@ elif page == "🧠 Identify User":
 
                 while True:
                     ret, img = cap.read()
-                    
                     if not ret:
                         print("Failed to grab frame")
                         break
                     
                     if count_img % 5 == 0:
-                            
+
                         # Extract text from preprocessed image
                         text = pytesseract.image_to_string(img)
 
@@ -99,37 +101,36 @@ elif page == "🧠 Identify User":
 
                         if passport_number:
                             #print("Passport No:", passport_number.group())
-                            current_id = passport_number.group()
+                            current_id, current_img = passport_number.group(), img
                             break
 
                         mrz_lines = re.findall(r'[A-Z0-9<]{40,}', ocr_text)
-
+                        
                         if mrz_lines:
                             mrz_line = mrz_lines[0]
-                            #print("MRZ Line:", mrz_line)
+                            print("MRZ Line:", mrz_line)
 
                             match = re.search(r'[A-Z]{2}\d{7}', mrz_line)
                             if match:
                                 #print("Passport No:", match.group())
-                                current_id = match.group()
+                                current_id, current_img = match.group(), img
                                 break
                         
                     count_img += 1
-                    
+            
                     resized_img = cv2.resize(img, (450, 300))
                     stframe.image(resized_img)
-
-            
+                        
     with col2:
         
         if current_id:
-            st.write("")
-            st.write("")
-            st.write("")
+            
+            st.markdown("___")
+            st.markdown("___")
             st.title("Results!!!")
             st.markdown("___")
             
-            pil_img = Image.fromarray(img)
+            pil_img = Image.fromarray(current_img)
 
             img_tensor = transform(pil_img).unsqueeze(0)
             with torch.no_grad():
