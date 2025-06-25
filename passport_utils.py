@@ -31,7 +31,7 @@ def extract_passport(path):
                 passport_number = re.search(r'\b[A-Z]{2}\d{7}\b', ocr_text)
 
                 if passport_number:
-                    #print("Passport No:", passport_number.group())
+                    print("Passport No:", passport_number.group())
                     return passport_number.group(), img
 
                 mrz_lines = re.findall(r'[A-Z0-9<]{40,}', ocr_text)
@@ -42,15 +42,9 @@ def extract_passport(path):
 
                     match = re.search(r'[A-Z]{2}\d{7}', mrz_line)
                     if match:
-                        #print("Passport No:", match.group())
+                        print("Passport No:", match.group())
                         return match.group(), img
                     
             count_img += 1
                 
-            #cv2.imshow("Camera Test", img)
-
-            #if cv2.waitKey(1) & 0xFF == ord('q'):
-                #break
-                
-    #cap.release()
-    #cv2.destroyAllWindows()
+        

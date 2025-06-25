@@ -13,7 +13,6 @@ from PIL import Image
 # ----------- Configurations -----------
 st.set_page_config(page_title="ID Classifier App", layout="wide")
 
-# Class names — update these based on your model
 class_names = ["ID Card", "Passport"]
 
 # Load model

@@ -1,9 +1,9 @@
-import streamlit as st
-from streamlit_webrtc import webrtc_streamer, VideoProcessorBase
 import av
 import re
 import cv2
 import pytesseract
+import streamlit as st
+from streamlit_webrtc import  VideoProcessorBase
 
 class VideoProcessor(VideoProcessorBase):
     
