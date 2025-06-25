@@ -8,7 +8,6 @@ import pandas as pd
 import streamlit as st
 import torchvision.transforms as transforms
 from user_utils import find_user_by_id
-from passport_utils import extract_passport
 from PIL import Image
 
 # ----------- Configurations -----------
@@ -21,7 +20,7 @@ class_names = ["ID Card", "Passport"]
 def load_model():
     model = torch.hub.load('pytorch/vision:v0.10.0', 'resnet50', weights=None)
     model.fc = torch.nn.Linear(2048, len(class_names))
-    model.load_state_dict(torch.load("./best_model.pt", map_location=torch.device('cpu')))
+    model.load_state_dict(torch.load("./best_model_passport2.pt", map_location=torch.device('cpu')))
     model.eval()
     return model
 
@@ -64,7 +63,7 @@ elif page == "🧠 Identify User":
     
     with col1:
 
-        video_file = st.file_uploader("Upload a video", type=["mp4", "mov", "avi"])
+        video_file = st.file_uploader("Upload a video", type=["mp4", "mov", "avi", "jpg", "jpeg", "png"])
     
         if video_file is not None:
             # ⏳ Save video to temp file
@@ -119,15 +118,20 @@ elif page == "🧠 Identify User":
                                 break
                         
                     count_img += 1
-                    
+                    current_img = img
                     resized_img = cv2.resize(img, (450, 300))
                     stframe.image(resized_img)
+                    
+                if current_img is not None:
+                    resized_img = cv2.resize(current_img, (450, 300))
+                    stframe.image(resized_img)
+                    
         
                
                         
     with col2:
         
-        if current_id:
+        if current_img is not None:
             
             st.markdown("___")
             st.markdown("___")
@@ -141,7 +145,8 @@ elif page == "🧠 Identify User":
                 output = model(img_tensor)
                 pred_idx = torch.argmax(output, dim=1).item()
                 confidence = torch.softmax(output, dim=1)[0][pred_idx].item()
-
+                
+            
             pred_label = class_names[pred_idx]
             st.success(f"**Predicted: {pred_label}**")
             st.success(f"**ID: {current_id}**")
