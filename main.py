@@ -59,7 +59,6 @@ elif page == "🧠 Identify User":
     # Create two columns
     col1, col2 = st.columns([2, 1])
     current_id = None
-    current_img = None
     
     with col1:
         video_file = st.file_uploader("Upload a video", type=["mp4", "mov", "avi"])
@@ -81,53 +80,38 @@ elif page == "🧠 Identify User":
 
                 while True:
                     ret, img = cap.read()
+                    
                     if not ret:
                         print("Failed to grab frame")
                         break
                     
                     if count_img % 5 == 0:
-                                
-                        #flipped = cv2.flip(img, -1)
-                        
-                        # Convert to grayscale for better OCR results
-                        #gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-                        # Optional: thresholding or blurring
-                        #gray = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY)[1]
-
+                            
                         # Extract text from preprocessed image
                         text = pytesseract.image_to_string(img)
 
                         # Example OCR result
                         ocr_text = text.replace('\n', ' ').strip()
 
-                        #print(ocr_text)
-
                         # Extract Passport Number (e.g., FA6752048)
                         passport_number = re.search(r'\b[A-Z]{2}\d{7}\b', ocr_text)
 
                         if passport_number:
-                            print("Passport No:", passport_number.group())
-                            current_id, current_img = passport_number.group(), img
+                            #print("Passport No:", passport_number.group())
+                            current_id = passport_number.group()
                             break
 
                         mrz_lines = re.findall(r'[A-Z0-9<]{40,}', ocr_text)
-                        #print(mrz_lines)
-                        #print(len(mrz_lines))
 
                         if mrz_lines:
                             mrz_line = mrz_lines[0]
-                            print("MRZ Line:", mrz_line)
+                            #print("MRZ Line:", mrz_line)
 
                             match = re.search(r'[A-Z]{2}\d{7}', mrz_line)
                             if match:
-                                print("Passport No:", match.group())
-                                current_id, current_img = match.group(), img
+                                #print("Passport No:", match.group())
+                                current_id = match.group()
                                 break
-                            else:
-                                print("Passport No not found in MRZ Line")
-                        else:
-                            print("MRZ Line not found.", count_img)
                         
                     count_img += 1
                     
@@ -138,7 +122,9 @@ elif page == "🧠 Identify User":
     with col2:
         
         if current_id:
-            st.write("Passport ID: ", current_id)
+            st.title("Results!!!")
+            st.markdown("___")
+            
             pil_img = Image.fromarray(img)
 
             img_tensor = transform(pil_img).unsqueeze(0)
@@ -149,6 +135,8 @@ elif page == "🧠 Identify User":
 
             pred_label = class_names[pred_idx]
             st.success(f"**Predicted: {pred_label}**")
+            st.success(f"**ID: {current_id}**")
+            
             st.info(f"Confidence: `{confidence:.2%}`")
 
             # Save to results folder (for All Users)
@@ -182,6 +170,7 @@ elif page == "📂 All Users":
 
 # -------------- Contact Page --------------
 elif page == "❔❕ Questions or Suggestions":
+    
     st.title("📬 Contact Information")
     st.markdown("""
     **Project Author**: Zikrulla Rakhmatov  

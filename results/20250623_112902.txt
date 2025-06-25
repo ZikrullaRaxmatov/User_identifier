@@ -1,2 +1,0 @@
-Prediction: Passport
-Confidence: 87.74%
