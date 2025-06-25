@@ -21,7 +21,7 @@ class_names = ["ID Card", "Passport"]
 def load_model():
     model = torch.hub.load('pytorch/vision:v0.10.0', 'resnet50', weights=None)
     model.fc = torch.nn.Linear(2048, len(class_names))
-    model.load_state_dict(torch.load("./best_model_passport3.pt", map_location=torch.device('cpu')))
+    model.load_state_dict(torch.load("./best_model.pt", map_location=torch.device('cpu')))
     model.eval()
     return model
 

@@ -24,7 +24,6 @@ Thumbs.db
 *.gif
 *.mp4
 *.avi
-*.txt
 
 # Ignore OCR output (optional)
 output.txt
