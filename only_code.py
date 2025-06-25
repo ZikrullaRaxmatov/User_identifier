@@ -83,8 +83,8 @@ def extract_text(path):
                     
             count_img += 1
                 
-            resized = cv2.resize(img, (540, 500))
-            cv2.imshow("Camera Test", resized)
+            #resized = cv2.resize(img, (540, 500))
+            cv2.imshow("Camera Test", img)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
@@ -93,8 +93,4 @@ def extract_text(path):
     cv2.destroyAllWindows()
 
 
-def main():
-    extract_text(2)
-
-if __name__ == "__main__":
-    main()
+extract_text(2)

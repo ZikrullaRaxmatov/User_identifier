@@ -1,6 +1,7 @@
 import re
 import cv2 
 import pytesseract
+
     
 def extract_passport(path):
 
@@ -46,5 +47,13 @@ def extract_passport(path):
                         return match.group(), img
                     
             count_img += 1
+            #cv2.imshow("Camera Test", img)
+
+            #if cv2.waitKey(1) & 0xFF == ord('q'):
+                #break
                 
+    #cap.release()
+    #cv2.destroyAllWindows()
+        
+
         

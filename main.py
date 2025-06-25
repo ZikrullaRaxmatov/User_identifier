@@ -8,6 +8,7 @@ import pandas as pd
 import streamlit as st
 import torchvision.transforms as transforms
 from user_utils import find_user_by_id
+from passport_utils import extract_passport
 from PIL import Image
 
 # ----------- Configurations -----------
@@ -62,8 +63,9 @@ elif page == "🧠 Identify User":
     current_img = None
     
     with col1:
+
         video_file = st.file_uploader("Upload a video", type=["mp4", "mov", "avi"])
-        
+    
         if video_file is not None:
             # ⏳ Save video to temp file
             tfile = tempfile.NamedTemporaryFile(delete=False)
@@ -72,7 +74,7 @@ elif page == "🧠 Identify User":
             stframe = st.empty()
             
             cap = cv2.VideoCapture(tfile.name)
-           
+        
             count_img = 0
 
             if not cap.isOpened():
@@ -99,7 +101,8 @@ elif page == "🧠 Identify User":
 
                         if passport_number:
                             #print("Passport No:", passport_number.group())
-                            current_id, current_img = passport_number.group(), img
+                            current_id = passport_number.group()
+                            current_img = img
                             break
 
                         mrz_lines = re.findall(r'[A-Z0-9<]{40,}', ocr_text)
@@ -111,13 +114,16 @@ elif page == "🧠 Identify User":
                             match = re.search(r'[A-Z]{2}\d{7}', mrz_line)
                             if match:
                                 #print("Passport No:", match.group())
-                                current_id, current_img = match.group(), img
+                                current_id = match.group()
+                                current_img = img
                                 break
                         
                     count_img += 1
-            
+                    
                     resized_img = cv2.resize(img, (450, 300))
                     stframe.image(resized_img)
+        
+               
                         
     with col2:
         
@@ -156,7 +162,8 @@ elif page == "🧠 Identify User":
             st.table(df)  #  Show result in table format
         else:
             st.warning("⚠️ User not found.")
-
+            
+    
 # -------------- All Users Page --------------
 elif page == "📂 All Users":
     st.title("📂 All Users")
