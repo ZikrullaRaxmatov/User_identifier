@@ -8,6 +8,7 @@ import cv2
 import pytesseract
 import re
 from user_utils import find_user_by_id
+import pandas as pd
 
 # ----------- Configurations -----------
 st.set_page_config(page_title="ID Classifier App", layout="wide")
@@ -115,13 +116,16 @@ elif page == "🧠 Identify User":
                         
                     count_img += 1
                     
-                    resized_img = cv2.resize(img, (500, 450))
+                    resized_img = cv2.resize(img, (450, 300))
                     stframe.image(resized_img)
 
             
     with col2:
         
         if current_id:
+            st.write("")
+            st.write("")
+            st.write("")
             st.title("Results!!!")
             st.markdown("___")
             
@@ -137,15 +141,22 @@ elif page == "🧠 Identify User":
             st.success(f"**Predicted: {pred_label}**")
             st.success(f"**ID: {current_id}**")
             st.info(f"Confidence: `{confidence:.2%}`")
-            
-            st.markdown("___")
-            folder_path = './results/'
-            user = find_user_by_id(folder_path, current_id)
-            st.success("User Found!!!")
-            st.write(user)
-            
+                
         else:
             st.write("No Data")
+            
+    st.markdown("___")
+    folder_path = './results/'
+    if not os.path.exists(folder_path):
+        st.error("❌ Folder not found.")
+    else:
+        user = find_user_by_id(folder_path, current_id)
+        if user:
+            st.success("✅ User Found!!!")
+            df = pd.DataFrame([user])  # Single row DataFrame
+            st.table(df)  #  Show result in table format
+        else:
+            st.warning("⚠️ User not found.")
 
 # -------------- All Users Page --------------
 elif page == "📂 All Users":

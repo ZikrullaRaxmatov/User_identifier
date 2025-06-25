@@ -1,6 +1,22 @@
 import os
 
+
 def find_user_by_id(folder_path, target_id):
+    for filename in os.listdir(folder_path):
+        if filename.endswith('.txt'):
+            file_path = os.path.join(folder_path, filename)
+            with open(file_path, 'r', encoding='utf-8') as file:
+                user_data = {}
+                for line in file:
+                    if ':' in line:
+                        key, value = line.strip().split(':', 1)
+                        user_data[key.strip()] = value.strip()
+                if user_data.get("ID") == target_id:
+                    return user_data
+    return None
+
+
+def find_user_by_id2(folder_path, target_id):
     # Loop through all files in the folder
     for filename in os.listdir(folder_path):
         if filename.endswith('.txt'):
