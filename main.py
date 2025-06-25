@@ -1,15 +1,14 @@
 import os
-import streamlit as st
-import torch
-import torchvision.transforms as transforms
-from PIL import Image
-import tempfile
-import cv2
-import pytesseract
 import re
-from user_utils import find_user_by_id
-from passport_utils import extract_passport
+import cv2
+import torch
+import tempfile
+import pytesseract
 import pandas as pd
+import streamlit as st
+import torchvision.transforms as transforms
+from user_utils import find_user_by_id
+from PIL import Image
 
 # ----------- Configurations -----------
 st.set_page_config(page_title="ID Classifier App", layout="wide")
@@ -40,7 +39,7 @@ transform = transforms.Compose([
 st.sidebar.title("🔍 Navigation")
 
 # -------------- Contact Page --------------
-page = st.sidebar.radio("Go to", ["🏠 Main Page", "🧠 Identify User", "📂 All Users", "📬 Contact"])
+page = st.sidebar.radio("Go to", ["🏠 Main Page", "🧠 Identify User", "📂 All Users", "❔ Q&A"])
 
 
 # -------------- Main Page --------------
@@ -48,7 +47,7 @@ if page == "🏠 Main Page":
     st.title("Welcome to the Document Classifier App")
     st.markdown("""
     This app allows you to:
-    - Real time video or upload passport or ID images.
+    - Real time video or upload passport or ID videos/images.
     - Detect document type using a trained ResNet50 model.
     - View results and download classification.
     """)
@@ -161,7 +160,7 @@ elif page == "🧠 Identify User":
 
 # -------------- All Users Page --------------
 elif page == "📂 All Users":
-    st.title("📂 All Prediction Results")
+    st.title("📂 All Users")
     results_path = "results"
     if os.path.exists(results_path):
         files = os.listdir(results_path)
@@ -176,7 +175,7 @@ elif page == "📂 All Users":
         st.warning("No results directory found.")
 
 # -------------- Contact Page --------------
-elif page == "❔❕ Questions or Suggestions":
+elif page == "❔ Q&A":
     
     st.title("📬 Contact Information")
     st.markdown("""
@@ -185,6 +184,7 @@ elif page == "❔❕ Questions or Suggestions":
     If you have any questions or suggestions, feel free to reach out!
     """)
     st.text_area("💬 Leave a message:")
+    st.button("Send Message")
     
 # Spacer + Divider
 st.sidebar.markdown("___")
