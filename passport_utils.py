@@ -55,5 +55,4 @@ def extract_passport(path):
     #cap.release()
     #cv2.destroyAllWindows()
         
-
-        
+#extract_passport(2)
