@@ -22,19 +22,19 @@ The main goal is to enable real-time user verification with just a camera input.
 
 ## 📥 Installation
 1. Clone the repository
-<pre> ```git clone https://github.com/ZikrullaRaxmatov/User_identifier.git ``` </pre>
-<pre> ```cd your-repo-name ``` </pre>
+<pre> git clone https://github.com/ZikrullaRaxmatov/User_identifier.git  </pre>
+<pre> cd your-repo-name </pre>
 
 3. Create and activate a virtual environment (recommended)
-<pre> ```python -m venv venv ``` </pre>
+<pre> python -m venv venv  </pre>
 - source venv/bin/activate   # For Linux/Mac
 - venv\Scripts\activate      # For Windows
 
 5. Install dependencies
-<pre> ```pip install -r requirements.txt ``` </pre>
+<pre> pip install -r requirements.txt  </pre>
 
 7. Run the application
-<pre> ```streamlit run main.py ``` </pre>
+<pre> streamlit run main.py  </pre>
 
 ## 📖 Usage
 - Open the app in your browser (Streamlit provides a local URL).
