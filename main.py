@@ -50,6 +50,13 @@ if page == "🏠 Main Page":
     - Detect document type using a trained ResNet50 model.
     - View results and download classification.
     """)
+    
+    # Load an image (can be a file or URL)
+    image = Image.open("uzpid.jpg")
+    #image = image.resize((600, 500))
+
+    # Display the image
+    st.image(image, use_container_width=True)
 
 # -------------- Identify User --------------
 elif page == "🧠 Identify User":
@@ -203,7 +210,7 @@ st.sidebar.markdown("### 📬 Contact")
 
 st.sidebar.markdown("""
 📧 **Email**: zikrullarakhmatov@gmail.com  
-☎️ **Tel**: +998 99 334 77 88  
+☎️ **Tel**: +8210 8143 0080  
 """)
 
 st.sidebar.markdown("""
