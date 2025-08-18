@@ -63,7 +63,7 @@ elif page == "🧠 Identify User":
     
     with col1:
 
-        video_file = st.file_uploader("Upload a video", type=["mp4", "mov", "avi", "jpg", "jpeg", "png"])
+        video_file = st.file_uploader("Upload a video or an image", type=["mp4", "mov", "avi", "jpg", "jpeg", "png"])
     
         if video_file is not None:
             # ⏳ Save video to temp file
