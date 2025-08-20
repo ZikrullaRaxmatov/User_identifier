@@ -3,7 +3,7 @@
 This project is a user identification system that captures a document using a camera, classifies it, extracts text information via OCR, and verifies it against a database. If a match is found, the system retrieves and reports all related user information.
 
 The main goal is to enable real-time user verification with just a camera input.
-<img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/9e830d16-88b2-466e-a223-e6f14edff383" />
+![photo_5274217254373947191_w](https://github.com/user-attachments/assets/aeafe2db-a3e2-431d-b925-9882cf6645c4)
 ❗ This system works only uzbek passports and ID cards now. But you can costumize to your document type
 
 
