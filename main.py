@@ -150,8 +150,10 @@ elif page == "🧠 Identify User":
             img_tensor = transform(pil_img).unsqueeze(0)
             with torch.no_grad():
                 output = model(img_tensor)
+                print(output)
                 pred_idx = torch.argmax(output, dim=1).item()
                 confidence = torch.softmax(output, dim=1)[0][pred_idx].item()
+                print(confidence)
                 
             
             pred_label = class_names[pred_idx]
