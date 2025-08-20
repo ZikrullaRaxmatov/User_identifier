@@ -3,8 +3,6 @@
 This project is a user identification system that captures a document using a camera, classifies it, extracts text information via OCR, and verifies it against a database. If a match is found, the system retrieves and reports all related user information.
 
 The main goal is to enable real-time user verification with just a camera input.
-<br>
-<img width="223" height="563" alt="image" src="https://github.com/user-attachments/assets/c8ceddfc-d256-4319-a1b4-aa49b558cd68" />
 <img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/9e830d16-88b2-466e-a223-e6f14edff383" />
 
 
